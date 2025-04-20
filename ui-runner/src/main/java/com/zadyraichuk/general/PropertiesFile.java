@@ -5,7 +5,7 @@ import java.util.Properties;
 
 public class PropertiesFile {
 
-    private Properties properties;
+    private volatile Properties properties;
     private File file;
 
     public PropertiesFile(File file) {
