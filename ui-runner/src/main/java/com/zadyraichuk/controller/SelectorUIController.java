@@ -1,7 +1,6 @@
 package com.zadyraichuk.controller;
 
 import com.zadyraichuk.general.MathUtils;
-import com.zadyraichuk.general.PropertiesFile;
 import com.zadyraichuk.selector.AbstractRandomSelector;
 import com.zadyraichuk.selector.RationalRandomSelector;
 import com.zadyraichuk.variant.Variant;
@@ -70,7 +69,9 @@ public class SelectorUIController {
 
     private AbstractRandomSelector<String, ? extends Variant<String>> selector;
     private Speed speed;
+    private Thread rollSoundThread;
     private boolean wheelAnimating;
+    private boolean isAppAlive;
 
     public SelectorUIController() {
         selectorController = SelectorDataController.getInstance();
@@ -85,6 +86,7 @@ public class SelectorUIController {
             renderSpeedSelector(speed);
             renderWheelSelector(selectorController.getVariantsListNames(), selector.getName());
             renderWheel(selector);
+            isAppAlive = true;
         }
     }
 
@@ -102,12 +104,14 @@ public class SelectorUIController {
     public void onRollClick() {
         if (selector != null && !wheelAnimating) {
             wheelAnimating = true;
-            RotateTransition rotate = getRotateTransition(speed.getRotationDegree());
+            int rotationDegree = speed.getRotationDegree();
+            RotateTransition rotate = getRotateTransition(rotationDegree);
 
-            int[] soundTime = getSoundTime(selector.getCurrentRotation(), speed);
-            soundTime = interpolateSoundTime(soundTime, speed, rotate.getInterpolator());
+            int[] soundTime = getSoundTime(selector.getCurrentRotation(), rotationDegree, speed.duration);
+            soundTime = interpolateSoundTime(soundTime, speed.duration, rotate.getInterpolator());
             startRollSoundThread(soundTime);
 
+            //todo add smooth animation for arcs when rational selected
             rotate.play();
         }
     }
@@ -179,8 +183,16 @@ public class SelectorUIController {
         speedComboBox.getStyleClass().add("open");
     }
 
+    public void shutDown() throws InterruptedException {
+        isAppAlive = false;
+        if (rollSoundThread != null) {
+            rollSoundThread.interrupt();
+            rollSoundThread.join();
+        }
+    }
+
     private void renderSpeedSelector(Speed speed) {
-        List<Speed> speeds = List.of(Speed.LOW, Speed.MEDIUM, Speed.HIGH);
+        List<Speed> speeds = List.of(Speed.values());
         ObservableList<Speed> list = FXCollections.observableList(speeds);
         speedComboBox.getItems().clear();
         speedComboBox.getItems().addAll(list);
@@ -278,12 +290,12 @@ public class SelectorUIController {
         rotate.setNode(wheelGroup);
 
         //todo check sound with rational list and linear interpolator
-        rotate.setInterpolator(Interpolator.LINEAR);
+//        rotate.setInterpolator(Interpolator.LINEAR);
 
         rotate.setOnFinished(e -> {
-            selector.setCurrentRotation((int) wheelGroup.getRotate());
-            wheelGroup.setRotate(selector.getCurrentRotation());
-            int markerDegree = (selector.getCurrentRotation() + 90) % 360;
+            selector.setCurrentRotation((int) wheelGroup.getRotate() + 90);
+//            wheelGroup.setRotate(selector.getCurrentRotation());
+            int markerDegree = (selector.getCurrentRotation()) % 360;
             Variant<String> selected = selector.select(markerDegree);
             resultField.setText(selected.getValue());
             if (isRationalCheckBox.isSelected()) {
@@ -296,9 +308,9 @@ public class SelectorUIController {
 
     //todo too big
     //todo fix some delays with rational lists
-    private int[] getSoundTime(int currentRotation, Speed speed) {
-        int degree = speed.getRotationDegree();
+    private int[] getSoundTime(int currentRotation, int degree, int duration) {
         double[] oneCycle = selector.getVariantsList().probabilities();
+//        oneCycle = shiftBySelectedVariant(oneCycle);
         int cyclesCount = (int) Math.ceil((degree + currentRotation) / 360.0);
         int endDegree = (degree + currentRotation) % 360;
 
@@ -334,13 +346,39 @@ public class SelectorUIController {
         }
 
         return percents.stream()
-            .mapToInt(e -> (int) (e * speed.duration))
+            .mapToInt(e -> (int) (e * duration))
             .toArray();
     }
 
+    private double[] shiftBySelectedVariant(double[] oneCycle) {
+        int selectedDegree = selector.getCurrentRotation() + 90;
+        Variant<String> selected = selector.select(selectedDegree);
+        int selectedIndex = selector.indexOf(selected);
+
+        if (selectedIndex == 0)
+            return oneCycle;
+
+        double[] shifted = new double[oneCycle.length];
+        int index = 0;
+        for (int i = selectedIndex; i < oneCycle.length; i++) {
+            shifted[index++] = oneCycle[i];
+        }
+        for (int i = 0; i < selectedIndex; i++) {
+            shifted[index++] = oneCycle[i];
+        }
+        return shifted;
+    }
+
     //todo a little big
-    private int[] interpolateSoundTime(int[] soundTime, Speed speed, Interpolator interpolator) {
-        int duration = speed.duration;
+    private int[] interpolateSoundTime(int[] soundTime, int duration, Interpolator interpolator) {
+        //todo not enough curved function, make custom interpolator
+        // or make some operations with interpolated difference that add/subtract to soundTime
+//        Interpolator interpolator1 = new Interpolator() {
+//            @Override
+//            protected double curve(double t) {
+//                return 0;
+//            }
+//        };
         double[] fractions = new double[soundTime.length];
         int[] result = new int[soundTime.length];
 
@@ -399,18 +437,20 @@ public class SelectorUIController {
     }
 
     private void startRollSoundThread(int[] soundTime) {
-        Thread thread = new Thread(() -> {
-            for (int time : soundTime) {
-                try {
+        rollSoundThread = new Thread(() -> {
+            try {
+                for (int time : soundTime) {
                     Thread.sleep(time);
-                    player.seek(Duration.ZERO);
-                    player.play();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    if (isAppAlive) {
+                        player.seek(Duration.ZERO);
+                        player.play();
+                    } else {
+                        player.stop();
+                    }
                 }
-            }
+            } catch (InterruptedException ignored) {}
         });
-        thread.start();
+        rollSoundThread.start();
     }
 
     private void showPane(Pane pane) {
@@ -474,7 +514,13 @@ public class SelectorUIController {
             public int getRotationDegree() {
                 return RANDOM.nextInt(360) + 360 * 2;
             }
-        };
+        },
+        TEST("Test", 10000) {
+            @Override
+            public int getRotationDegree() {
+                return RANDOM.nextInt(360) + 360 * 3;
+            }
+        },;
 
         private final String name;
         private final int duration;
@@ -482,14 +528,6 @@ public class SelectorUIController {
         Speed(String name, int duration) {
             this.name = name;
             this.duration = duration;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getDuration() {
-            return duration;
         }
 
         public abstract int getRotationDegree();

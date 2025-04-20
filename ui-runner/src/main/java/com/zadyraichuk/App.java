@@ -13,7 +13,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
+
     public static final PropertiesFile PROPERTIES;
+
+    private SelectorUIController controller;
 
     static {
         PROPERTIES = loadAppProperties();
@@ -29,8 +32,7 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
 //        Thread.setDefaultUncaughtExceptionHandler(this::catchException);
 
-        SelectorUIController controller = setUpPrimaryStage(primaryStage);
-//        loadVariantCollections(properties);
+        controller = setUpPrimaryStage(primaryStage);
         controller.init();
     }
 
@@ -44,6 +46,13 @@ public class App extends Application {
         primaryStage.show();
 
         return loader.getController();
+    }
+
+    @Override
+    public void stop() throws InterruptedException {
+        if (controller != null) {
+            controller.shutDown();
+        }
     }
 
 //    private void catchException(Thread t, Throwable e) {
