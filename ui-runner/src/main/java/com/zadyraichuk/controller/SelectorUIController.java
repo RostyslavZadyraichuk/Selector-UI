@@ -295,6 +295,7 @@ public class SelectorUIController {
                 selectorController.setCurrentSelector(selected);
                 selector = selectorController.getCurrentSelector();
                 renderWheel(selector);
+                resultField.setText("Result");
 
                 isRationalCheckBox.setDisable(false);
             }
