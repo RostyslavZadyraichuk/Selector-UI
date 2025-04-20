@@ -147,12 +147,13 @@
 }
 
 #select-combo-box .list-view {
-    -fx-padding: 8px 0 10px 0;
+    -fx-padding: 8px 0 10px 0 !important;
     -fx-translate-y: -8px
 }
 
 #select-combo-box .list-view .list-cell {
     -fx-border-insets: 0 0 4px 0;
+    -fx-cell-size: 25px;
 }
 
 #result-field {

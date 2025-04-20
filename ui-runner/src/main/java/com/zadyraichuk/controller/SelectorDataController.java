@@ -22,6 +22,7 @@ public class SelectorDataController {
 
     private static SelectorDataController instance;
 
+    //todo change key to String = Selector.name + hash
     private final Map<String, AbstractRandomSelector<String, ? extends Variant<String>>> selectors;
 
     private AbstractRandomSelector<String, ? extends Variant<String>> currentSelector;
@@ -70,14 +71,16 @@ public class SelectorDataController {
     }
 
     public void updateCurrentSelector(AbstractRandomSelector<String, ? extends Variant<String>> newSelector) {
-        selectors.remove(currentSelector.getName());
-        if (!currentSelector.getName().equals(newSelector.getName())) {
-            File oldFile = new File(VARIANTS_DIR + currentSelector.getName() + FILE_EXTENSION);
-            SelectorIO.delete(oldFile.toPath());
-        }
-        currentSelector = newSelector;
+        if (selectors.containsKey(newSelector.getName())) {
+            selectors.remove(currentSelector.getName());
+            if (!currentSelector.getName().equals(newSelector.getName())) {
+                File oldFile = new File(VARIANTS_DIR + currentSelector.getName() + FILE_EXTENSION);
+                SelectorIO.delete(oldFile.toPath());
+            }
+            currentSelector = newSelector;
 
-        saveNewSelector(newSelector);
+            saveNewSelector(newSelector);
+        }
     }
 
     public void saveNewSelector(AbstractRandomSelector<String, ? extends Variant<String>> newSelector) {
@@ -114,9 +117,8 @@ public class SelectorDataController {
     public AbstractRandomSelector<String, ?> loadSelectorTemplate() {
         try {
             File templateFile = new File(VARIANTS_DIR + "templates/Template" + FILE_EXTENSION);
-            AbstractRandomSelector<String, ?> template = SelectorIO.read(templateFile.toPath());
-            selectors.put("Template", template);
-            return template;
+            //            selectors.put("Template", template);
+            return SelectorIO.read(templateFile.toPath());
         } catch (ClassNotFoundException | IOException | NullPointerException e) {
             System.out.println("Cannot read template");
         }
