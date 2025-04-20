@@ -368,7 +368,7 @@ public class SelectorUIController {
         isRationalCheckBox.setSelected(selector instanceof RationalRandomSelector);
 
         ObservableList<Node> wheelChildren = wheelGroup.getChildren();
-        wheelGroup.setRotate(selector.getCurrentRotation());
+        wheelGroup.setRotate(selector.getCurrentRotation() - 90);
         wheelChildren.clear();
 
         Rectangle wheelShape = new Rectangle(360, 360);

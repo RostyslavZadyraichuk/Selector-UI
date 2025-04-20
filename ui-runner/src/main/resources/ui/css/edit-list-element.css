@@ -50,21 +50,18 @@
     -fx-pref-width: 50px;
 }
 
-/*.edit-element .weight-field.error {*/
-/*    -fx-border-width: 2px;*/
-/*    -fx-border-color: #da0909;*/
-/*    -fx-text-fill: #da0909;*/
-/*}*/
-
-/*.edit-element .weight-field.error:selected,*/
-/*.edit-element .weight-field.error:focused {*/
-/*    -fx-background-color: transparent;*/
-/*}*/
-
 .edit-element .remove-btn {
     -fx-pref-width: 30px;
     -fx-pref-height: 30px;
     -fx-font-size: 30px;
+}
+
+.edit-element .remove-btn .ikonli-font-icon {
+    -fx-fill: #c92929 !important;
+}
+
+.edit-element .remove-btn:hover .ikonli-font-icon {
+    -fx-fill: #b62525 !important;
 }
 
 .edit-element .nav-container {
