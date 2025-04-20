@@ -46,23 +46,6 @@ public class App extends Application {
         return loader.getController();
     }
 
-//    private void loadVariantCollections(PropertiesFile properties) throws IOException {
-//        SelectorDataController appLogic = SelectorDataController.getInstance();
-//        File variantsDir = new File(Objects.requireNonNull(getClass().getResource("../../../selector/variants/")).getPath());
-//        appLogic.readVariantsFromDirectory(variantsDir);
-//
-//        String selectedVariantsName = properties.getProperty("last.used.variants");
-//        VariantsList selectedVariants = appLogic.getVariantsList(selectedVariantsName);
-//
-//        SelectorDataController.SelectorType type = SelectorDataController.SelectorType
-//                .valueOf(properties.getProperty("selector.type"));
-//        RandomSelector selector = new RandomSelector(selectedVariants);
-//        if (type == SelectorDataController.SelectorType.RATIONAL) {
-//            selector = new RationalRandomSelector(selectedVariants);
-//        }
-//        appLogic.setCurrentSelector(selector);
-//    }
-
 //    private void catchException(Thread t, Throwable e) {
 //        System.out.println(e.getMessage());
 ////        e.printStackTrace();

@@ -25,7 +25,7 @@
    <stylesheets>
       <URL value="@../css/selector.css" />
    </stylesheets>
-   <VBox fx:id="mainPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="550.0" scaleShape="false">
+   <VBox fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="550.0" scaleShape="false">
       <HBox id="top-panel" prefHeight="80.0" prefWidth="200.0">
          <VBox alignment="CENTER" prefHeight="80.0" prefWidth="80.0">
             <Button id="settings-btn" mnemonicParsing="false" onAction="#onNewClick" prefHeight="50.0" prefWidth="50.0" styleClass="transparent-btn">
@@ -38,7 +38,7 @@
             </Button>
          </VBox>
          <VBox alignment="CENTER" prefHeight="80.0" prefWidth="390.0">
-            <ChoiceBox id="select-choice-box" fx:id="wheelSelector" prefHeight="40.0" prefWidth="340.0" />
+            <ChoiceBox id="select-choice-box" fx:id="wheelChoiceBox" prefHeight="40.0" prefWidth="340.0" />
          </VBox>
          <VBox alignment="CENTER" prefHeight="80.0" prefWidth="80.0">
             <Button mnemonicParsing="false" onAction="#onNewClick" prefHeight="42.0" prefWidth="42.0">
@@ -63,7 +63,7 @@
             </effect>
          </Circle>
          <Circle fill="#b5b5b5" radius="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
-         <Group fx:id="wheelContainer" />
+         <Group fx:id="wheelGroup" />
          <Arc length="30.0" radiusX="90.0" radiusY="55.0" startAngle="75.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" type="ROUND" StackPane.alignment="TOP_CENTER">
             <StackPane.margin>
                <Insets top="84.0" />
@@ -115,7 +115,7 @@
          <FontIcon iconLiteral="bi-pen-fill" iconSize="30" />
       </graphic>
    </Button>
-   <VBox fx:id="editPanel" alignment="TOP_CENTER" layoutY="100.0" prefHeight="550.0" prefWidth="550.0" styleClass="edit-window" stylesheets="@../css/edit-list-element.css">
+   <VBox fx:id="editPane" alignment="TOP_CENTER" layoutY="100.0" prefHeight="550.0" prefWidth="550.0" styleClass="edit-window" stylesheets="@../css/edit-list-element.css">
       <HBox prefHeight="80.0" prefWidth="200.0">
          <VBox alignment="CENTER_RIGHT" prefHeight="200.0" prefWidth="100.0">
             <Button mnemonicParsing="false" onAction="#onCloseEditClick" prefHeight="40.0" prefWidth="40.0" text="Close">
@@ -174,7 +174,7 @@
          </cursor>
       </Button>
    </VBox>
-   <VBox fx:id="wheelsPanel" alignment="TOP_CENTER" layoutY="100.0" prefHeight="650.0" prefWidth="550.0" styleClass="edit-window" stylesheets="@../css/wheel-list-element.css" visible="false">
+   <VBox fx:id="wheelsPane" alignment="TOP_CENTER" layoutY="100.0" prefHeight="650.0" prefWidth="550.0" styleClass="edit-window" stylesheets="@../css/wheel-list-element.css" visible="false">
       <HBox prefHeight="80.0" prefWidth="200.0">
          <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
             <Button mnemonicParsing="false" onAction="#onCloseSelectClick" prefHeight="40.0" prefWidth="40.0" text="Close">
