@@ -1,3 +1,4 @@
 [submodule "selector-util-api"]
 	path = selector-util-api
+    branch = dev
 	url = https://github.com/RostyslavZadyraichuk/selector-util-api

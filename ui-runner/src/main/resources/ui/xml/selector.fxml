@@ -19,9 +19,9 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<Pane maxHeight="650.0" prefHeight="650.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.zadyraichuk.MainController">
+<Pane maxHeight="650.0" prefHeight="650.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.zadyraichuk.SelectorController">
    <stylesheets>
-      <URL value="@../css/chooser.css" />
+      <URL value="@../css/selector.css" />
    </stylesheets>
    <VBox fx:id="mainPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="550.0" scaleShape="false">
       <HBox prefHeight="80.0" prefWidth="200.0">
