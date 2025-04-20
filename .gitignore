@@ -1,0 +1,10 @@
+#Code editors
+.idea/*
+.vscode/*
+
+#Output folders
+/target/**
+/out/**
+
+#Temporary files
+*~
