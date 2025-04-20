@@ -60,7 +60,7 @@ public class SelectorUIController {
     private Group wheelGroup;
     // TODO change to button and choice in separate view
     @FXML
-    private ComboBox<String> wheelComboBox;
+    private ComboBox<IdNamePair> wheelComboBox;
     @FXML
     private ComboBox<Speed> speedComboBox;
     @FXML
@@ -118,7 +118,7 @@ public class SelectorUIController {
         }
 
         renderSpeedSelector(speed);
-        renderWheelSelector(selectorController.getVariantsListNames());
+        renderWheelSelector(selectorController.getVariantPairsForSelector());
         isAppAlive = true;
     }
 
@@ -259,7 +259,7 @@ public class SelectorUIController {
         selector = selectorController.getCurrentSelector();
 
         slideDownPane(editPane);
-        renderWheelSelector(selectorController.getVariantsListNames());
+        renderWheelSelector(selectorController.getVariantPairsForSelector());
         renderWheel(selector);
     }
 
@@ -270,7 +270,7 @@ public class SelectorUIController {
         selectorController.saveNewSelector(newSelector);
 
         slideDownPane(editPane);
-        renderWheelSelector(selectorController.getVariantsListNames());
+        renderWheelSelector(selectorController.getVariantPairsForSelector());
     }
 
     @FXML
@@ -302,12 +302,13 @@ public class SelectorUIController {
     @FXML
     public void hideWheelComboBox() {
         wheelComboBox.getStyleClass().remove("open");
-        String selected = wheelComboBox.getSelectionModel().getSelectedItem();
+        IdNamePair selected = wheelComboBox.getSelectionModel().getSelectedItem();
         // TODO change equals method to Selector.equals that will compare by Name + hash
         // because some selectors can same names
         if (selected != null) {
-            if (selector == null || !selected.equals(selector.getName())) {
-                selectorController.setCurrentSelector(selected);
+            if (selector == null || selected.getId() != selector.getId()) {
+                selectorController.updateCurrentSelector(selector);
+                selectorController.setCurrentSelector(selected.getId());
                 selector = selectorController.getCurrentSelector();
                 renderWheel(selector);
                 resultField.setText("Result");
@@ -386,14 +387,14 @@ public class SelectorUIController {
     }
 
     // TODO make external thread calculation
-    private void renderWheelSelector(Set<String> names) {
-        ObservableList<String> list = FXCollections.observableList(new ArrayList<>(names));
+    private void renderWheelSelector(Set<IdNamePair> pairs) {
+        ObservableList<IdNamePair> list = FXCollections.observableList(new ArrayList<>(pairs));
         wheelComboBox.getItems().clear();
         wheelComboBox.getItems().addAll(list);
         wheelComboBox.setVisibleRowCount(Math.min(list.size(), 10));
 
         if (selector != null && selector.getName() != null) {
-            wheelComboBox.getSelectionModel().select(selector.getName());
+            wheelComboBox.getSelectionModel().select(new IdNamePair(selector.getId(), selector.getName()));
         }
     }
 

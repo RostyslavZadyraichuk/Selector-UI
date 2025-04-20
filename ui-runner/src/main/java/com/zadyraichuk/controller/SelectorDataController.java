@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SelectorDataController {
 
@@ -22,7 +24,7 @@ public class SelectorDataController {
     private static SelectorDataController instance;
 
     // TODO change key to String = Selector.name + hash
-    private final Map<String, AbstractRandomSelector<String, ? extends Variant<String>>> selectors;
+    private final Map<Long, AbstractRandomSelector<String, ? extends Variant<String>>> selectors;
 
     private AbstractRandomSelector<String, ? extends Variant<String>> currentSelector;
 
@@ -42,13 +44,17 @@ public class SelectorDataController {
         if (selectors.isEmpty()) {
             currentSelector = loadSelectorTemplate();
         } else {
-            if (App.PROPERTIES == null) {
-                System.out.println("Not found properties file. Used first available selector.");
-                currentSelector = selectors.values().stream().findFirst().orElse(null);
-            } else {
-                String lastUsedSelector = App.PROPERTIES.getProperty("last.used.variant");
-                currentSelector = selectors.get(lastUsedSelector);
-            }
+            var defaultSelector = selectors.values().stream()
+                .findFirst()
+                .orElse(loadSelectorTemplate());
+
+            currentSelector = Optional.ofNullable(App.PROPERTIES)
+                .map(props -> props.getProperty("last.used.variant.id"))
+                .map(Long::parseLong)
+                .map(selectors::get)
+                .orElse(null);
+
+            currentSelector = currentSelector == null ? defaultSelector : currentSelector;
         }
     }
 
@@ -59,14 +65,14 @@ public class SelectorDataController {
         return instance;
     }
 
-    public void setCurrentSelector(String name) {
-        AbstractRandomSelector<String, ? extends Variant<String>> selector = selectors.get(name);
+    public void setCurrentSelector(long selectorId) {
+        AbstractRandomSelector<String, ? extends Variant<String>> selector = selectors.get(selectorId);
         if (selector == null) {
             currentSelector = loadSelectorTemplate();
         } else {
             // TODO save in file via Selector IO thread and change
             currentSelector = selector;
-            App.PROPERTIES.setProperty("last.used.variant", currentSelector.getName());
+            App.PROPERTIES.setProperty("last.used.variant.id", String.valueOf(currentSelector.getId()));
         }
     }
 
@@ -75,9 +81,9 @@ public class SelectorDataController {
     }
 
     public void updateCurrentSelector(AbstractRandomSelector<String, ? extends Variant<String>> newSelector) {
-        if (selectors.containsKey(newSelector.getName())) {
-            selectors.remove(currentSelector.getName());
-            if (!currentSelector.getName().equals(newSelector.getName())) {
+        if (newSelector != null && selectors.containsKey(newSelector.getId())) {
+            selectors.remove(currentSelector.getId());
+            if (currentSelector.getId() != newSelector.getId()) {
                 File oldFile = new File(VARIANTS_DIR + currentSelector.getName() + '.' + FILE_EXTENSION);
                 SelectorIO.delete(oldFile.toPath());
             }
@@ -88,7 +94,7 @@ public class SelectorDataController {
     }
 
     public void saveNewSelector(AbstractRandomSelector<String, ? extends Variant<String>> newSelector) {
-        selectors.put(newSelector.getName(), newSelector);
+        selectors.put(newSelector.getId(), newSelector);
 
         try {
             File newFile = new File(VARIANTS_DIR + newSelector.getName() + '.' + FILE_EXTENSION);
@@ -98,15 +104,17 @@ public class SelectorDataController {
         }
     }
 
-    public Set<String> getVariantsListNames() {
-        return selectors.keySet();
+    public Set<IdNamePair> getVariantPairsForSelector() {
+        return selectors.values().stream()
+            .map(selector -> new IdNamePair(selector.getId(), selector.getName()))
+            .collect(Collectors.toSet());
     }
 
     public void makeCurrentSelectorRational() {
         if (currentSelector != null &&
             !(currentSelector instanceof RationalRandomSelector)) {
             currentSelector = RationalRandomSelector.of(currentSelector);
-            selectors.put(currentSelector.getName(), currentSelector);
+            selectors.put(currentSelector.getId(), currentSelector);
         }
     }
 
@@ -114,7 +122,7 @@ public class SelectorDataController {
         if (currentSelector != null &&
             !(currentSelector instanceof RandomSelector)) {
             currentSelector = RandomSelector.of(currentSelector);
-            selectors.put(currentSelector.getName(), currentSelector);
+            selectors.put(currentSelector.getId(), currentSelector);
         }
     }
 
@@ -141,10 +149,10 @@ public class SelectorDataController {
                     String fileNameWithExt = file.getName();
 
                     if (fileNameWithExt.endsWith('.' + FILE_EXTENSION)) {
-                        String fileName = fileNameWithExt.substring(0,
-                            fileNameWithExt.length() - FILE_EXTENSION.length() - 1);
                         try {
-                            selectors.put(fileName, SelectorIO.read(Path.of(file.getPath())));
+                            AbstractRandomSelector<String, ? extends Variant<String>> selector =
+                                SelectorIO.read(Path.of(file.getPath()));
+                            selectors.put(selector.getId(), selector);
                         } catch (IOException e) {
                             System.out.println(e.getMessage());
                         }
