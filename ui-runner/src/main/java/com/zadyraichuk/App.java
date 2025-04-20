@@ -55,7 +55,7 @@ public class App extends Application {
 //    }
 
     private static PropertiesFile loadAppProperties() {
-        URL path = App.class.getResource("../../../selector/app.properties");
+        URL path = App.class.getResource("/app.properties");
         File propertiesFile = new File(Objects.requireNonNull(path).getPath());
         return new PropertiesFile(propertiesFile);
     }
