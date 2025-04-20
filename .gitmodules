@@ -1,0 +1,3 @@
+[submodule "selector-util-api"]
+	path = selector-util-api
+	url = https://github.com/RostyslavZadyraichuk/selector-util-api

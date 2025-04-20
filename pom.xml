@@ -5,9 +5,13 @@
   <groupId>com.zadyraichuk</groupId>
   <artifactId>SelectorUI</artifactId>
   <version>0.1.0-beta</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
 
   <name>SelectorUI</name>
+
+  <modules>
+    <module>selector-util-api</module>
+  </modules>
 
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
