@@ -2,6 +2,7 @@ package com.zadyraichuk;
 
 import com.zadyraichuk.controller.SelectorUIController;
 import com.zadyraichuk.general.PropertiesFile;
+import com.zadyraichuk.general.ResourceLoader;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -14,18 +15,23 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
+    public static final String USER_PATH;
     public static final PropertiesFile PROPERTIES;
 
     private SelectorUIController controller;
 
     static {
+        USER_PATH = System.getProperty("user.home") + "/.my_utils/selector/";
+        File userPath = new File(USER_PATH);
+        if (!userPath.exists()) {
+            userPath.mkdirs();
+        }
+
         PROPERTIES = loadAppProperties();
     }
 
-    private static PropertiesFile loadAppProperties() {
-        URL path = App.class.getResource("/app.properties");
-        File propertiesFile = new File(Objects.requireNonNull(path).getPath());
-        return new PropertiesFile(propertiesFile);
+    public static void main(String[] args) {
+        launch(args);
     }
 
     @Override
@@ -36,9 +42,33 @@ public class App extends Application {
         controller.init();
     }
 
+    @Override
+    public void stop() throws InterruptedException, IOException {
+        if (controller != null) {
+            controller.shutDown();
+        }
+    }
+
+    //    private void catchException(Thread t, Throwable e) {
+//        System.out.println(e.getMessage());
+    ////        e.printStackTrace();
+//    }
+
+    private static PropertiesFile loadAppProperties() {
+        URL path = App.class.getResource("../../../selector/app.properties");
+        File propertiesFile = new File(Objects.requireNonNull(path).getPath());
+        return new PropertiesFile(propertiesFile);
+    }
+
     private SelectorUIController setUpPrimaryStage(Stage primaryStage) throws IOException {
-        FXMLLoader loader =
-            new FXMLLoader(Objects.requireNonNull(getClass().getResource("/ui/xml/selector.fxml")));
+        File uiFxmlFile = ResourceLoader.loadResource(
+            "/ui/xml/selector.fxml",
+            USER_PATH + "xml/",
+            "selector",
+            "fxml");
+        Objects.requireNonNull(uiFxmlFile);
+
+        FXMLLoader loader = new FXMLLoader(uiFxmlFile.toURI().toURL());
         Parent root = loader.load();
         primaryStage.setTitle("Wheel Selector");
         primaryStage.setScene(new Scene(root, 550, 650));
@@ -47,17 +77,5 @@ public class App extends Application {
 
         return loader.getController();
     }
-
-    @Override
-    public void stop() throws InterruptedException, IOException {
-        if (controller != null) {
-            controller.shutDown();
-        }
-    }
-
-//    private void catchException(Thread t, Throwable e) {
-//        System.out.println(e.getMessage());
-////        e.printStackTrace();
-//    }
 
 }

@@ -1,40 +1,44 @@
 package com.zadyraichuk.controller;
 
 import com.zadyraichuk.App;
+import com.zadyraichuk.general.ResourceLoader;
 import com.zadyraichuk.selector.AbstractRandomSelector;
 import com.zadyraichuk.selector.RandomSelector;
 import com.zadyraichuk.selector.RationalRandomSelector;
 import com.zadyraichuk.variant.Variant;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class SelectorDataController {
 
     private static final String VARIANTS_DIR;
 
-    private static final String FILE_EXTENSION = ".selector";
+    private static final String FILE_EXTENSION = "selector";
 
     private static SelectorDataController instance;
 
-    //todo change key to String = Selector.name + hash
+    // TODO change key to String = Selector.name + hash
     private final Map<String, AbstractRandomSelector<String, ? extends Variant<String>>> selectors;
 
     private AbstractRandomSelector<String, ? extends Variant<String>> currentSelector;
 
     static {
-        URL path = App.class.getResource("/variants/");
-        VARIANTS_DIR = Objects.requireNonNull(path).getPath();
+        VARIANTS_DIR = App.USER_PATH + "variants/";
+        ResourceLoader.loadResource(
+            "/variants/templates/Template.selector",
+            App.USER_PATH + "variants/templates/",
+            "Template",
+            FILE_EXTENSION);
     }
 
     private SelectorDataController() {
         selectors = new HashMap<>();
         setUpAllVariants();
+
         if (selectors.isEmpty()) {
             currentSelector = loadSelectorTemplate();
         } else {
@@ -60,7 +64,7 @@ public class SelectorDataController {
         if (selector == null) {
             currentSelector = loadSelectorTemplate();
         } else {
-            //todo save in file via Selector IO thread and change
+            // TODO save in file via Selector IO thread and change
             currentSelector = selector;
             App.PROPERTIES.setProperty("last.used.variant", currentSelector.getName());
         }
@@ -74,7 +78,7 @@ public class SelectorDataController {
         if (selectors.containsKey(newSelector.getName())) {
             selectors.remove(currentSelector.getName());
             if (!currentSelector.getName().equals(newSelector.getName())) {
-                File oldFile = new File(VARIANTS_DIR + currentSelector.getName() + FILE_EXTENSION);
+                File oldFile = new File(VARIANTS_DIR + currentSelector.getName() + '.' + FILE_EXTENSION);
                 SelectorIO.delete(oldFile.toPath());
             }
             currentSelector = newSelector;
@@ -87,7 +91,7 @@ public class SelectorDataController {
         selectors.put(newSelector.getName(), newSelector);
 
         try {
-            File newFile = new File(VARIANTS_DIR + newSelector.getName() + FILE_EXTENSION);
+            File newFile = new File(VARIANTS_DIR + newSelector.getName() + '.' + FILE_EXTENSION);
             SelectorIO.write(newSelector, newFile.toPath());
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -116,8 +120,8 @@ public class SelectorDataController {
 
     public AbstractRandomSelector<String, ?> loadSelectorTemplate() {
         try {
-            File templateFile = new File(VARIANTS_DIR + "templates/Template" + FILE_EXTENSION);
-            //            selectors.put("Template", template);
+            File templateFile = new File(VARIANTS_DIR + "templates/Template." + FILE_EXTENSION);
+            // selectors.put("Template", template);
             return SelectorIO.read(templateFile.toPath());
         } catch (ClassNotFoundException | IOException | NullPointerException e) {
             System.out.println("Cannot read template");
@@ -136,7 +140,7 @@ public class SelectorDataController {
                 for (File file : files) {
                     String fileNameWithExt = file.getName();
 
-                    if (fileNameWithExt.endsWith(FILE_EXTENSION)) {
+                    if (fileNameWithExt.endsWith('.' + FILE_EXTENSION)) {
                         String fileName = fileNameWithExt.substring(0,
                             fileNameWithExt.length() - 9);
                         try {
