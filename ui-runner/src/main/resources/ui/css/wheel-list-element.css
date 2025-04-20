@@ -1,0 +1,22 @@
+.wheel-element {
+    -fx-padding: 10px 10px 10px 25px;
+    -fx-alignment: left;
+}
+
+.wheel-element .separator {
+    -fx-pref-width: 15px;
+    -fx-pref-height: 15px;
+}
+
+.wheel-element .separator .line {
+    visibility: hidden;
+}
+
+.wheel-element .value-field {
+    -fx-pref-width: 200px;
+}
+
+.edit-element .button {
+    -fx-pref-width: 60px;
+    -fx-pref-height: 60px;
+}

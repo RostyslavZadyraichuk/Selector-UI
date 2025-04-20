@@ -1,0 +1,12 @@
+.list-view {
+    -fx-background-color: transparent;
+}
+
+.wheel-container .button {
+    -fx-background-radius: 100%;
+}
+
+#editWindow {
+    -fx-background-color: #e7e7e7;
+    -fx-translate-y: 550px;
+}

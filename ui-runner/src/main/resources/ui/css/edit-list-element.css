@@ -1,0 +1,63 @@
+.edit-element {
+    -fx-padding: 10px 10px 10px 25px;
+    -fx-alignment: center;
+}
+
+.edit-element .color-picker {
+    -fx-background-color: white;
+    -fx-pref-height: 45px;
+    -fx-pref-width: 45px;
+}
+
+.edit-element .color-picker .arrow-button {
+    visibility: hidden;
+}
+
+.edit-element .color-picker .color-picker-label {
+    visibility: hidden;
+}
+
+.edit-element .separator {
+    -fx-pref-width: 15px;
+    -fx-pref-height: 5px;
+}
+
+.edit-element .separator .line {
+    visibility: hidden;
+}
+
+.edit-element .value-field, .edit-element .weight-field {
+    -fx-pref-height: 30px;
+    -fx-background-radius: 10px;
+}
+
+.edit-element .value-field {
+    -fx-pref-width: 250px;
+}
+
+.edit-element .weight-field {
+    -fx-pref-width: 50px;
+}
+
+.edit-element .remove-btn {
+    -fx-pref-width: 45px;
+    -fx-pref-height: 45px;
+}
+
+.edit-element .nav-container {
+    -fx-alignment: center;
+}
+
+.edit-element .up-btn, .edit-element .down-btn {
+    -fx-pref-width: 45px;
+    -fx-pref-height: 15px;
+    -fx-min-height: 15px;
+    -fx-max-height: 15px;
+    -fx-background-radius: 8px;
+    -fx-font-size: 2px;
+}
+
+/*#editWeightLabel {*/
+/*    -fx-start-margin: ;*/
+/*}*/
+

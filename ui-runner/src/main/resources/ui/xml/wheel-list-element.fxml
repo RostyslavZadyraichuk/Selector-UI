@@ -1,0 +1,41 @@
+<HBox alignment="CENTER_LEFT" styleClass="wheel-element" stylesheets="@../css/wheel-list-element.css">
+    <children>
+        <StackPane prefHeight="150.0" prefWidth="200.0">
+            <children>
+                <Circle radius="86.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
+                    <effect>
+                        <Shadow />
+                    </effect>
+                </Circle>
+                <Circle fill="#b5b5b5" radius="90.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                <Group>
+                    <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="172.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="172.0" />
+                        <Arc fill="#1f93ff" layoutX="86.0" layoutY="86.0" length="240.0" radiusX="86.0" radiusY="86.0" stroke="#b5b5b5" strokeType="INSIDE" type="ROUND" />
+                        <Arc fill="#ce21ff" layoutX="86.0" layoutY="86.0" length="40.0" radiusX="86.0" radiusY="86.0" startAngle="240.0" stroke="#b5b5b5" strokeType="INSIDE" type="ROUND" />
+                        <Arc fill="#ff7621" layoutX="86.0" layoutY="86.0" length="80.0" radiusX="86.0" radiusY="86.0" startAngle="280.0" stroke="#b5b5b5" strokeType="INSIDE" type="ROUND" />
+                    </children>
+                </Group>
+                <Circle radius="22.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
+                    <effect>
+                        <Shadow />
+                    </effect>
+                </Circle>
+                <Circle fill="#b5b5b5" radius="25.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+            </children>
+        </StackPane>
+        <Separator orientation="VERTICAL" />
+        <Label prefWidth="200.0" styleClass="value-field" text="Name" />
+        <Separator layoutX="421.0" layoutY="20.0" orientation="VERTICAL" />
+        <VBox alignment="CENTER" styleClass="nav-container">
+            <children>
+                <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="up-btn" text="Edit" />
+                <Separator prefHeight="20.0" />
+                <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="down-btn" text="Remove" />
+            </children>
+        </VBox>
+    </children>
+    <padding>
+        <Insets bottom="10.0" left="25.0" right="10.0" top="10.0" />
+    </padding>
+</HBox>
