@@ -82,12 +82,11 @@ public class SelectorDataController {
 
     public void updateCurrentSelector(AbstractRandomSelector<String, ? extends Variant<String>> newSelector) {
         if (newSelector != null && selectors.containsKey(newSelector.getId())) {
-            selectors.remove(currentSelector.getId());
+            selectors.remove(newSelector.getId());
             if (currentSelector.getId() != newSelector.getId()) {
-                File oldFile = new File(VARIANTS_DIR + currentSelector.getName() + '.' + FILE_EXTENSION);
+                File oldFile = new File(getSelectorPath(currentSelector));
                 SelectorIO.delete(oldFile.toPath());
             }
-            currentSelector = newSelector;
 
             saveNewSelector(newSelector);
         }
@@ -97,11 +96,21 @@ public class SelectorDataController {
         selectors.put(newSelector.getId(), newSelector);
 
         try {
-            File newFile = new File(VARIANTS_DIR + newSelector.getName() + '.' + FILE_EXTENSION);
+            File newFile = new File(getSelectorPath(newSelector));
             SelectorIO.write(newSelector, newFile.toPath());
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+
+        currentSelector = newSelector;
+    }
+
+    public void removeSelector(AbstractRandomSelector<String, ? extends Variant<String>> selector) {
+        selectors.remove(selector.getId());
+        File oldFile = new File(getSelectorPath(selector));
+        SelectorIO.delete(oldFile.toPath());
+
+        currentSelector = selectors.values().stream().findFirst().orElse(null);
     }
 
     public Set<IdNamePair> getVariantPairsForSelector() {
@@ -136,6 +145,10 @@ public class SelectorDataController {
         }
 
         return new RandomSelector("Empty List");
+    }
+
+    private String getSelectorPath(AbstractRandomSelector<String, ? extends Variant<String>> selector) {
+        return VARIANTS_DIR + selector.getName() + '_' + selector.getId() + '.' + FILE_EXTENSION;
     }
 
     private void setUpAllVariants() {

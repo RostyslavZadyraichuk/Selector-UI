@@ -254,7 +254,10 @@ public class SelectorUIController {
     @FXML
     public void onSaveClick() {
         String newSelectorName = editNameField.getText();
-        RandomSelector newSelector = new RandomSelector(newSelectorName, editableCollection);
+        var newSelector = selector instanceof RationalRandomSelector ?
+            new RationalRandomSelector(newSelectorName, RationalVariantsList.of(editableCollection)) :
+            new RandomSelector(newSelectorName, editableCollection);
+        newSelector.setId(selector.getId());
         selectorController.updateCurrentSelector(newSelector);
         selector = selectorController.getCurrentSelector();
 
@@ -268,9 +271,24 @@ public class SelectorUIController {
         String newSelectorName = editNameField.getText();
         RandomSelector newSelector = new RandomSelector(newSelectorName, editableCollection);
         selectorController.saveNewSelector(newSelector);
+        selector = selectorController.getCurrentSelector();
 
         slideDownPane(editPane);
         renderWheelSelector(selectorController.getVariantPairsForSelector());
+        renderWheel(selector);
+        wheelComboBox.getSelectionModel().select(new IdNamePair(selector.getId(), selector.getName()));
+    }
+
+    @FXML
+    public void onRemoveClick() {
+        if (selector != null) {
+            selectorController.removeSelector(selector);
+            selector = selectorController.getCurrentSelector();
+
+            renderWheelSelector(selectorController.getVariantPairsForSelector());
+            renderWheel(selector);
+            wheelComboBox.getSelectionModel().select(new IdNamePair(selector.getId(), selector.getName()));
+        }
     }
 
     @FXML
@@ -303,18 +321,15 @@ public class SelectorUIController {
     public void hideWheelComboBox() {
         wheelComboBox.getStyleClass().remove("open");
         IdNamePair selected = wheelComboBox.getSelectionModel().getSelectedItem();
-        // TODO change equals method to Selector.equals that will compare by Name + hash
-        // because some selectors can same names
-        if (selected != null) {
-            if (selector == null || selected.getId() != selector.getId()) {
-                selectorController.updateCurrentSelector(selector);
-                selectorController.setCurrentSelector(selected.getId());
-                selector = selectorController.getCurrentSelector();
-                renderWheel(selector);
-                resultField.setText("Result");
 
-                isRationalCheckBox.setDisable(false);
-            }
+        if (selected != null && (selector == null || selected.getId() != selector.getId())) {
+            selectorController.updateCurrentSelector(selector);
+            selectorController.setCurrentSelector(selected.getId());
+            selector = selectorController.getCurrentSelector();
+            renderWheel(selector);
+            resultField.setText("Result");
+
+            isRationalCheckBox.setDisable(false);
         }
     }
 
@@ -468,15 +483,17 @@ public class SelectorUIController {
         EditCell.linkedCollection = editableCollection;
 
         editListView.addEventFilter(MouseEvent.ANY, event -> {
-            if (event.getTarget() instanceof HBox)
+            if (event.getTarget() instanceof HBox) {
                 event.consume();
-            else if (event.getTarget() instanceof FontIcon)
+            } else if (event.getTarget() instanceof FontIcon) {
                 editListView.getSelectionModel().clearSelection();
+            }
         });
 
         editListView.addEventFilter(KeyEvent.ANY, event -> {
-            if (event.getTarget() instanceof HBox)
+            if (event.getTarget() instanceof HBox) {
                 event.consume();
+            }
         });
 
         for (Variant<String> variant : variants) {
@@ -716,8 +733,9 @@ public class SelectorUIController {
         for (int i = 0; i < soundTime.length; i++) {
             fractions[i] = (double) soundTime[i] / duration;
 
-            if (i > 0)
+            if (i > 0) {
                 fractions[i] += fractions[i - 1];
+            }
         }
 
         for (int i = 0; i < soundTime.length; i++) {
@@ -727,10 +745,11 @@ public class SelectorUIController {
             result[i] -= result[i - 1];
         }
         for (int i = 0; i < result.length; i++) {
-            if (result[i] > soundTime[i])
+            if (result[i] > soundTime[i]) {
                 result[i] = soundTime[i] - (result[i] - soundTime[i]);
-            else if (result[i] < soundTime[i])
+            } else if (result[i] < soundTime[i]) {
                 result[i] = soundTime[i] + (soundTime[i] - result[i]);
+            }
         }
 
         return result;
