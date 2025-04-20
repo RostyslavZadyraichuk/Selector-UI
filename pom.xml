@@ -11,12 +11,23 @@
 
   <modules>
     <module>selector-util-api</module>
+    <module>ui-runner</module>
   </modules>
 
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <juint.version>5.7.2</juint.version>
   </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${juint.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>
