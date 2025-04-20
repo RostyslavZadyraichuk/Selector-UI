@@ -1,18 +1,34 @@
+.edit-list-view,
+.edit-list-view .list-cell {
+    -fx-background-color: #F4F4F4;
+}
+
+.list-cell {
+    -fx-padding: 0;
+}
+
+.text-field,
+.edit-element .text-field {
+    -fx-pref-height: 35px;
+    -fx-font-size: 14px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
 .edit-element {
     -fx-padding: 10px 10px 10px 25px;
-    -fx-alignment: center;
 }
 
-.edit-element .color-picker {
-    -fx-background-color: white;
+.edit-element .color-picker,
+.edit-element .drag-area {
     -fx-pref-height: 45px;
     -fx-pref-width: 45px;
+    -fx-font-size: 40px;
+    -fx-cursor: hand;
 }
 
-.edit-element .color-picker .arrow-button {
-    visibility: hidden;
-}
-
+.edit-element .color-picker .arrow,
+.edit-element .color-picker .arrow-button,
 .edit-element .color-picker .color-picker-label {
     visibility: hidden;
 }
@@ -26,38 +42,44 @@
     visibility: hidden;
 }
 
-.edit-element .value-field, .edit-element .weight-field {
-    -fx-pref-height: 30px;
-    -fx-background-radius: 10px;
-}
-
 .edit-element .value-field {
-    -fx-pref-width: 250px;
+    -fx-pref-width: 220px;
 }
 
 .edit-element .weight-field {
     -fx-pref-width: 50px;
 }
 
+/*.edit-element .weight-field.error {*/
+/*    -fx-border-width: 2px;*/
+/*    -fx-border-color: #da0909;*/
+/*    -fx-text-fill: #da0909;*/
+/*}*/
+
+/*.edit-element .weight-field.error:selected,*/
+/*.edit-element .weight-field.error:focused {*/
+/*    -fx-background-color: transparent;*/
+/*}*/
+
 .edit-element .remove-btn {
-    -fx-pref-width: 45px;
-    -fx-pref-height: 45px;
+    -fx-pref-width: 30px;
+    -fx-pref-height: 30px;
+    -fx-font-size: 30px;
 }
 
 .edit-element .nav-container {
     -fx-alignment: center;
 }
 
-.edit-element .up-btn, .edit-element .down-btn {
-    -fx-pref-width: 45px;
+.up-btn,
+.down-btn,
+.edit-element .up-btn,
+.edit-element .down-btn {
+    -fx-pref-width: 35px;
     -fx-pref-height: 15px;
     -fx-min-height: 15px;
     -fx-max-height: 15px;
     -fx-background-radius: 8px;
-    -fx-font-size: 2px;
+    -fx-font-size: 12px;
 }
-
-/*#editWeightLabel {*/
-/*    -fx-start-margin: ;*/
-/*}*/
 

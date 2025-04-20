@@ -49,7 +49,7 @@ public class App extends Application {
     }
 
     @Override
-    public void stop() throws InterruptedException {
+    public void stop() throws InterruptedException, IOException {
         if (controller != null) {
             controller.shutDown();
         }

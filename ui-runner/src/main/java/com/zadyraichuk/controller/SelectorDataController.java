@@ -16,6 +16,8 @@ public class SelectorDataController {
 
     private static final String VARIANTS_DIR = "/variants/";
 
+    private static final String FILE_EXTENSION = ".selector";
+
     private static SelectorDataController instance;
 
     private final Map<String, AbstractRandomSelector<String, ? extends Variant<String>>> selectors;
@@ -26,7 +28,7 @@ public class SelectorDataController {
         selectors = new HashMap<>();
         setUpAllVariants();
         if (selectors.isEmpty()) {
-            loadSelectorTemplate();
+            currentSelector = loadSelectorTemplate();
         } else {
             if (App.PROPERTIES == null) {
                 System.out.println("Not found properties file. Used first available selector.");
@@ -48,7 +50,7 @@ public class SelectorDataController {
     public void setCurrentSelector(String name) {
         AbstractRandomSelector<String, ? extends Variant<String>> selector = selectors.get(name);
         if (selector == null) {
-            loadSelectorTemplate();
+            currentSelector = loadSelectorTemplate();
         } else {
             //todo save in file via Selector IO thread and change
             currentSelector = selector;
@@ -58,6 +60,29 @@ public class SelectorDataController {
 
     public AbstractRandomSelector<String, ? extends Variant<String>> getCurrentSelector() {
         return currentSelector;
+    }
+
+    public void updateCurrentSelector(AbstractRandomSelector<String, ? extends Variant<String>> newSelector) {
+        selectors.remove(currentSelector.getName());
+        currentSelector = newSelector;
+
+        if (!currentSelector.getName().equals(newSelector.getName())) {
+            File oldFile = new File(VARIANTS_DIR + currentSelector.getName() + FILE_EXTENSION);
+            SelectorIO.delete(oldFile.toPath());
+        }
+
+        saveNewSelector(newSelector);
+    }
+
+    public void saveNewSelector(AbstractRandomSelector<String, ? extends Variant<String>> newSelector) {
+        selectors.put(newSelector.getName(), newSelector);
+
+        try {
+            File newFile = new File(VARIANTS_DIR + newSelector.getName() + FILE_EXTENSION);
+            SelectorIO.write(newSelector, newFile.toPath());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public Set<String> getVariantsListNames() {
@@ -80,6 +105,19 @@ public class SelectorDataController {
         }
     }
 
+    public AbstractRandomSelector<String, ?> loadSelectorTemplate() {
+        try {
+            File templateFile = new File(VARIANTS_DIR + "templates/Template" + FILE_EXTENSION);
+            AbstractRandomSelector<String, ?> template = SelectorIO.read(templateFile.toPath());
+            selectors.put("Template", template);
+            return template;
+        } catch (ClassNotFoundException | IOException | NullPointerException e) {
+            System.out.println("Cannot read template");
+        }
+
+        return new RandomSelector("Empty List");
+    }
+
     private void setUpAllVariants() {
         File directory = new File(VARIANTS_DIR);
 
@@ -90,9 +128,9 @@ public class SelectorDataController {
                 for (File file : files) {
                     String fileNameWithExt = file.getName();
 
-                    if (fileNameWithExt.endsWith(".selector")) {
+                    if (fileNameWithExt.endsWith(FILE_EXTENSION)) {
                         String fileName = fileNameWithExt.substring(0,
-                                fileNameWithExt.length() - 9);
+                            fileNameWithExt.length() - 9);
                         try {
                             selectors.put(fileName, SelectorIO.read(Path.of(file.getPath())));
                         } catch (ClassNotFoundException | IOException e) {
@@ -101,17 +139,6 @@ public class SelectorDataController {
                     }
                 }
             }
-        }
-    }
-
-    private void loadSelectorTemplate() {
-        try {
-            File templateFile = new File(VARIANTS_DIR + "templates/Template.selector");
-            AbstractRandomSelector<String, ?> template = SelectorIO.read(templateFile.toPath());
-            selectors.put("Template", template);
-            currentSelector = template;
-        } catch (ClassNotFoundException | IOException | NullPointerException e) {
-            System.out.println("Cannot read template");
         }
     }
 }
