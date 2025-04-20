@@ -3,12 +3,15 @@ package com.zadyraichuk.controller;
 import com.zadyraichuk.general.MathUtils;
 import com.zadyraichuk.general.PropertiesFile;
 import com.zadyraichuk.selector.AbstractRandomSelector;
+import com.zadyraichuk.selector.RationalRandomSelector;
 import com.zadyraichuk.variant.Variant;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,9 +19,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -30,17 +33,23 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
 
 public class SelectorUIController {
 
-    private static final File CLICK_SOUND = new File("/ui/click.wav");
+    private static final File CLICK_SOUND_FILE = new File("src/main/resources/selector/ui/click.wav");
     private static final Random RANDOM = new Random(System.currentTimeMillis());
-    private static int DURATION = 1000;
+    private static final double MAX_SHADOW_OPACITY = 0.4;
+    private static final int ANIMATION_DURATION = 200;
 
+    @FXML
+    private Pane parentPane;
     @FXML
     private VBox mainPane;
     @FXML
     private VBox editPane;
+    @FXML
+    private VBox settingsPane;
     @FXML
     private VBox wheelsPane;
 
@@ -48,18 +57,33 @@ public class SelectorUIController {
     private TextField resultField;
     @FXML
     private Group wheelGroup;
+    //todo change to button and choice in separate view
     @FXML
-    private ChoiceBox<String> wheelChoiceBox;
+    private ComboBox<String> wheelComboBox;
+    @FXML
+    private ComboBox<Speed> speedComboBox;
+    @FXML
+    private CheckBox isRationalCheckBox;
+
+    private final SelectorDataController selectorController;
+    private final MediaPlayer player;
 
     private AbstractRandomSelector<String, ? extends Variant<String>> selector;
-    private boolean wheelAnimating = false;
-    private MediaPlayer player = new MediaPlayer(new Media(CLICK_SOUND.toURI().toString()));
+    private Speed speed;
+    private boolean wheelAnimating;
+
+    public SelectorUIController() {
+        selectorController = SelectorDataController.getInstance();
+        player = new MediaPlayer(new Media(CLICK_SOUND_FILE.toURI().toString()));
+        wheelAnimating = false;
+        speed = Speed.HIGH;
+    }
 
     public void init() {
-        selector = SelectorDataController.getInstance().getCurrentSelector();
-        if (selector != null) {
-            renderWheelSelector(SelectorDataController.getInstance().getVariantsListNames(),
-                selector.getName());
+        if (selectorController.getCurrentSelector() != null) {
+            selector = selectorController.getCurrentSelector();
+            renderSpeedSelector(speed);
+            renderWheelSelector(selectorController.getVariantsListNames(), selector.getName());
             renderWheel(selector);
         }
     }
@@ -70,26 +94,32 @@ public class SelectorUIController {
     }
 
     @FXML
+    public void onSettingsClick() {
+        showPane(settingsPane);
+    }
+
+    @FXML
     public void onRollClick() {
         if (selector != null && !wheelAnimating) {
             wheelAnimating = true;
-            int degree = generateRotationDegree();
-            RotateTransition rotate = getRotateTransition(degree);
+            RotateTransition rotate = getRotateTransition(speed.getRotationDegree());
 
-            int[] soundTime = getSoundTime(selector.getCurrentRotation(), degree, DURATION);
-            soundTime = interpolateSoundTime(soundTime, DURATION, rotate.getInterpolator());
+            int[] soundTime = getSoundTime(selector.getCurrentRotation(), speed);
+            soundTime = interpolateSoundTime(soundTime, speed, rotate.getInterpolator());
             startRollSoundThread(soundTime);
+
             rotate.play();
         }
     }
 
     @FXML
     public void onEditClick() {
-
+        showPane(editPane);
     }
 
     @FXML
     public void onCloseEditClick() {
+        hidePane(editPane);
     }
 
     @FXML
@@ -107,15 +137,79 @@ public class SelectorUIController {
 
     }
 
+    @FXML
+    public void setRational() {
+        boolean isRational = isRationalCheckBox.isSelected();
+        if (isRational) {
+            selectorController.makeCurrentSelectorRational();
+        } else {
+            selectorController.makeCurrentSelectorNotRational();
+        }
+        selector = selectorController.getCurrentSelector();
+        renderWheel(selector);
+    }
+
+    @FXML
+    public void onShadowClick(MouseEvent event) {
+        Node clickedRect = (Node) event.getSource();
+        ObservableList<Node> children = parentPane.getChildren();
+        int shadowRectIndex = children.indexOf(clickedRect);
+
+        hidePane((Pane) children.get(shadowRectIndex + 1));
+    }
+
+    @FXML
+    public void hideWheelComboBox() {
+        wheelComboBox.getStyleClass().remove("open");
+    }
+
+    @FXML
+    public void showWheelComboBox() {
+        wheelComboBox.getStyleClass().add("open");
+    }
+
+    @FXML
+    public void hideSpeedComboBox() {
+        speedComboBox.getStyleClass().remove("open");
+        speed = speedComboBox.getSelectionModel().getSelectedItem();
+    }
+
+    @FXML
+    public void showSpeedComboBox() {
+        speedComboBox.getStyleClass().add("open");
+    }
+
+    private void renderSpeedSelector(Speed speed) {
+        List<Speed> speeds = List.of(Speed.LOW, Speed.MEDIUM, Speed.HIGH);
+        ObservableList<Speed> list = FXCollections.observableList(speeds);
+        speedComboBox.getItems().clear();
+        speedComboBox.getItems().addAll(list);
+        speedComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Speed speed) {
+                return speed.name;
+            }
+
+            @Override
+            public Speed fromString(String string) {
+                return Speed.valueOf(string.toUpperCase());
+            }
+        });
+
+        speedComboBox.getSelectionModel().select(speed);
+    }
+
     private void renderWheelSelector(Set<String> names, String selected) {
         ObservableList<String> list = FXCollections.observableList(new ArrayList<>(names));
-        wheelChoiceBox.getItems().clear();
-        wheelChoiceBox.getItems().addAll(list);
+        wheelComboBox.getItems().clear();
+        wheelComboBox.getItems().addAll(list);
 
-        wheelChoiceBox.getSelectionModel().select(selected);
+        wheelComboBox.getSelectionModel().select(selected);
     }
 
     private void renderWheel(AbstractRandomSelector<String, ? extends Variant<String>> selector) {
+        isRationalCheckBox.setSelected(selector instanceof RationalRandomSelector);
+
         ObservableList<Node> wheelChildren = wheelGroup.getChildren();
         wheelChildren.clear();
 
@@ -179,9 +273,12 @@ public class SelectorUIController {
     private RotateTransition getRotateTransition(int degree) {
         RotateTransition rotate = new RotateTransition();
         rotate.setAxis(Rotate.Z_AXIS);
-        rotate.setDuration(Duration.millis(DURATION));
+        rotate.setDuration(Duration.millis(speed.duration));
         rotate.setByAngle(degree);
         rotate.setNode(wheelGroup);
+
+        //todo check sound with rational list and linear interpolator
+        rotate.setInterpolator(Interpolator.LINEAR);
 
         rotate.setOnFinished(e -> {
             selector.setCurrentRotation((int) wheelGroup.getRotate());
@@ -189,21 +286,18 @@ public class SelectorUIController {
             int markerDegree = (selector.getCurrentRotation() + 90) % 360;
             Variant<String> selected = selector.select(markerDegree);
             resultField.setText(selected.getValue());
+            if (isRationalCheckBox.isSelected()) {
+                renderWheel(selector);
+            }
             wheelAnimating = false;
         });
         return rotate;
     }
 
-    private int generateRotationDegree() {
-        if (DURATION < 1000)
-            return RANDOM.nextInt(360) + 360 * 2;
-        if (DURATION > 3000)
-            return RANDOM.nextInt(360) + 360 * 4;
-        else
-            return RANDOM.nextInt(360) + 360 * 3;
-    }
-
-    private int[] getSoundTime(int currentRotation, int degree, int duration) {
+    //todo too big
+    //todo fix some delays with rational lists
+    private int[] getSoundTime(int currentRotation, Speed speed) {
+        int degree = speed.getRotationDegree();
         double[] oneCycle = selector.getVariantsList().probabilities();
         int cyclesCount = (int) Math.ceil((degree + currentRotation) / 360.0);
         int endDegree = (degree + currentRotation) % 360;
@@ -240,11 +334,13 @@ public class SelectorUIController {
         }
 
         return percents.stream()
-            .mapToInt(e -> (int) (e * duration))
+            .mapToInt(e -> (int) (e * speed.duration))
             .toArray();
     }
 
-    private int[] interpolateSoundTime(int[] soundTime, int duration, Interpolator interpolator) {
+    //todo a little big
+    private int[] interpolateSoundTime(int[] soundTime, Speed speed, Interpolator interpolator) {
+        int duration = speed.duration;
         double[] fractions = new double[soundTime.length];
         int[] result = new int[soundTime.length];
 
@@ -271,6 +367,7 @@ public class SelectorUIController {
         return result;
     }
 
+    //todo a little big
     private List<Double> wheelPartProbabilities(double[] oneCycle, int startDegree, int endDegree) {
         double startPercent = 0;
         double endPercent = 1;
@@ -314,5 +411,87 @@ public class SelectorUIController {
             }
         });
         thread.start();
+    }
+
+    private void showPane(Pane pane) {
+        ObservableList<Node> children = parentPane.getChildren();
+        int nodeIndex = children.indexOf(pane);
+        Node shadowRectangle = children.get(nodeIndex - 1);
+        shadowRectangle.setOpacity(0);
+        shadowRectangle.setVisible(true);
+
+        FadeTransition opacityTransition = new FadeTransition();
+        opacityTransition.setDuration(new Duration(ANIMATION_DURATION));
+        opacityTransition.setToValue(MAX_SHADOW_OPACITY);
+        opacityTransition.setNode(shadowRectangle);
+
+        TranslateTransition translateTransition = new TranslateTransition();
+        translateTransition.setDuration(new Duration(ANIMATION_DURATION));
+        double yPos = mainPane.getHeight() - pane.getHeight();
+        translateTransition.setToY(yPos);
+        translateTransition.setNode(pane);
+
+        opacityTransition.play();
+        translateTransition.play();
+    }
+
+    private void hidePane(Pane pane) {
+        ObservableList<Node> children = parentPane.getChildren();
+        int nodeIndex = children.indexOf(pane);
+        Node shadowRectangle = children.get(nodeIndex - 1);
+
+        FadeTransition opacityTransition = new FadeTransition();
+        opacityTransition.setDuration(new Duration(ANIMATION_DURATION));
+        opacityTransition.setToValue(0);
+        opacityTransition.setNode(shadowRectangle);
+        opacityTransition.setOnFinished(e -> shadowRectangle.setVisible(false));
+
+        TranslateTransition translateTransition = new TranslateTransition();
+        translateTransition.setDuration(new Duration(ANIMATION_DURATION));
+        double yPos = mainPane.getHeight();
+        translateTransition.setToY(yPos);
+        translateTransition.setNode(pane);
+
+        opacityTransition.play();
+        translateTransition.play();
+    }
+
+    private enum Speed {
+        LOW("Low", 3000) {
+            @Override
+            public int getRotationDegree() {
+                return RANDOM.nextInt(360) + 360 * 4;
+            }
+        },
+        MEDIUM("Medium", 2000) {
+            @Override
+            public int getRotationDegree() {
+                return RANDOM.nextInt(360) + 360 * 3;
+            }
+        },
+        HIGH("High", 1000) {
+            @Override
+            public int getRotationDegree() {
+                return RANDOM.nextInt(360) + 360 * 2;
+            }
+        };
+
+        private final String name;
+        private final int duration;
+
+        Speed(String name, int duration) {
+            this.name = name;
+            this.duration = duration;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getDuration() {
+            return duration;
+        }
+
+        public abstract int getRotationDegree();
     }
 }

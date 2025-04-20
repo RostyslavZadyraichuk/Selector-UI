@@ -2,6 +2,8 @@ package com.zadyraichuk.controller;
 
 import com.zadyraichuk.App;
 import com.zadyraichuk.selector.AbstractRandomSelector;
+import com.zadyraichuk.selector.RandomSelector;
+import com.zadyraichuk.selector.RationalRandomSelector;
 import com.zadyraichuk.variant.Variant;
 import java.io.File;
 import java.io.IOException;
@@ -43,9 +45,15 @@ public class SelectorDataController {
         return instance;
     }
 
-    public void setCurrentSelector(AbstractRandomSelector<String, ? extends Variant<String>> currentSelector) {
-        this.currentSelector = currentSelector;
-        App.PROPERTIES.setProperty("last.used.variants", currentSelector.getName());
+    public void setCurrentSelector(String name) {
+        AbstractRandomSelector<String, ? extends Variant<String>> selector = selectors.get(name);
+        if (selector == null) {
+            loadSelectorTemplate();
+        } else {
+            //todo save in file via Selector IO thread and change
+            currentSelector = selector;
+            App.PROPERTIES.setProperty("last.used.variants", currentSelector.getName());
+        }
     }
 
     public AbstractRandomSelector<String, ? extends Variant<String>> getCurrentSelector() {
@@ -54,6 +62,22 @@ public class SelectorDataController {
 
     public Set<String> getVariantsListNames() {
         return selectors.keySet();
+    }
+
+    public void makeCurrentSelectorRational() {
+        if (currentSelector != null &&
+            !(currentSelector instanceof RationalRandomSelector)) {
+            currentSelector = RationalRandomSelector.of(currentSelector);
+            selectors.put(currentSelector.getName(), currentSelector);
+        }
+    }
+
+    public void makeCurrentSelectorNotRational() {
+        if (currentSelector != null &&
+            !(currentSelector instanceof RandomSelector)) {
+            currentSelector = RandomSelector.of(currentSelector);
+            selectors.put(currentSelector.getName(), currentSelector);
+        }
     }
 
     private void setUpAllVariants() {
