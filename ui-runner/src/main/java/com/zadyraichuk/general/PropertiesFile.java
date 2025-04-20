@@ -8,8 +8,17 @@ public class PropertiesFile {
     private Properties properties;
     private File file;
 
-    public PropertiesFile(File file) throws IOException {
-        loadProperties(file);
+    public PropertiesFile(File file) {
+        try {
+            loadProperties(file);
+        } catch (IOException e) {
+            this.file = file;
+            try {
+                saveProperties();
+            } catch (IOException ex) {
+                throw new RuntimeException("Properties cannot be stored", ex);
+            }
+        }
     }
 
     public void loadProperties(File file) throws IOException {

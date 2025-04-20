@@ -21,12 +21,28 @@
     -fx-translate-y: 550px;
 }
 
-#selectBtn {
+.wheel-label {
+    -fx-font-size: 20;
+    -fx-font-weight: 800;
+    -fx-text-fill: #f3f3f3;
+}
+
+#select-choice-box {
     -fx-background-radius: 8px;
     -fx-background-color: #d7d7d7;
 }
 
-#selectBtn:hover {
+#select-choice-box .label {
+    -fx-text-fill: #656565;
+}
+
+#select-choice-box .arrow {
+    -fx-pref-width: 14px;
+    -fx-pref-height: 5px;
+    -fx-background-color: #E88164;
+}
+
+#select-choice-box:hover {
     -fx-background-color: #c5c5c5;
 }
 
@@ -87,4 +103,9 @@
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-padding: 0;
+}
+
+#top-panel {
+    -fx-background-color: #e8e8e8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 0, 0, 0, 2);
 }

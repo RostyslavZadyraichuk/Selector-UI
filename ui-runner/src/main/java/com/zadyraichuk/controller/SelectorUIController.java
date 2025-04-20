@@ -1,6 +1,7 @@
-package com.zadyraichuk;
+package com.zadyraichuk.controller;
 
 import com.zadyraichuk.general.PropertiesFile;
+import com.zadyraichuk.selector.AbstractRandomSelector;
 import com.zadyraichuk.variant.Variant;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +25,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.transform.Rotate;
 
-public class SelectorController {
+public class SelectorUIController {
 
     @FXML
     private VBox mainPanel;
@@ -40,20 +41,19 @@ public class SelectorController {
     @FXML
     private ChoiceBox<String> wheelSelector;
 
-    private PropertiesFile properties;
-
-    public void init(PropertiesFile properties) {
-        this.properties = properties;
-
-        String selectedCollection = properties.getProperty("last.used.variants");
-        renderWheelSelector(SelectorLogic.getInstance().getVariantsListNames());
-        renderWheel(SelectorLogic.getInstance().getVariantsList(selectedCollection));
-
+    public void init() {
+        AbstractRandomSelector<String, ? extends Variant<String>> currentSelector =
+            SelectorDataController.getInstance().getCurrentSelector();
+        if (currentSelector != null) {
+            renderWheelSelector(SelectorDataController.getInstance().getVariantsListNames(),
+                currentSelector.getName());
+            renderWheel(currentSelector);
+        }
     }
 
     @FXML
     public void onNewClick() {
-        
+
     }
 
     @FXML
@@ -85,16 +85,15 @@ public class SelectorController {
 
     }
 
-    private void renderWheelSelector(Set<String> names) {
+    private void renderWheelSelector(Set<String> names, String selected) {
         ObservableList<String> list = FXCollections.observableList(new ArrayList<>(names));
         wheelSelector.getItems().clear();
         wheelSelector.getItems().addAll(list);
 
-        String selected = properties.getProperty("last.used.variants");
         wheelSelector.getSelectionModel().select(selected);
     }
 
-    private void renderWheel(ColoredVariantsList variants) {
+    private void renderWheel(AbstractRandomSelector<String, ? extends Variant<String>> selector) {
         ObservableList<Node> wheelChildren = wheelContainer.getChildren();
         wheelChildren.clear();
 
@@ -103,17 +102,17 @@ public class SelectorController {
         wheelShape.setVisible(false);
         wheelChildren.add(wheelShape);
 
-        generateWheelElements(wheelChildren, variants.iterator());
+        generateWheelElements(wheelChildren, selector.getVariantsList().iterator());
     }
 
-    private void generateWheelElements(ObservableList<Node> parent, Iterator<Variant> iterator) {
-        double currentRotate = 90;
+    private void generateWheelElements(ObservableList<Node> parent, Iterator<? extends Variant<String>> iterator) {
+        double currentRotate = 0;
         double usedDegreesSum = 0;
         boolean hasNext = iterator.hasNext();
-        ColoredRationalVariant variant;
-        
+        Variant<String> variant;
+
         while (hasNext) {
-            variant = (ColoredRationalVariant) iterator.next();
+            variant = iterator.next();
             double arcLength = variant.getCurrentPercent() * 360;
 
             Arc arc = new Arc(0, 0, 180, 180, currentRotate, arcLength);
@@ -123,7 +122,7 @@ public class SelectorController {
             arc.setStroke(Color.valueOf("#b5b5b5"));
             arc.setStrokeType(StrokeType.INSIDE);
             arc.setType(ArcType.ROUND);
-            double labelRotation = (currentRotate + arcLength / 2) % 360;
+            double labelRotation = (currentRotate + arcLength / 2) % 360 * (-1);
 
             currentRotate = (currentRotate + arcLength) % 360;
             usedDegreesSum += arcLength;
@@ -135,22 +134,22 @@ public class SelectorController {
             }
 
             parent.add(arc);
-//            Label label = generateLabel(variant.getValue(), labelRotation);
-//            parent.add(label);
+            Label label = generateLabel(variant.getValue(), labelRotation);
+            parent.add(label);
         }
     }
 
     private Label generateLabel(String value, double rotation) {
         Label label = new Label(value);
         label.setTranslateX(180);
-        label.setTranslateY(164);
-        label.setMaxWidth(170);
-        label.setMinWidth(170);
+        label.setTranslateY(165);
+        label.setMaxWidth(175);
+        label.setMinWidth(175);
         label.setPadding(new Insets(0, 0, 0, 50));
         label.setAlignment(Pos.CENTER);
         label.getStyleClass().add("wheel-label");
 
-        Rotate rotate = Rotate.rotate(rotation, 0, 24);
+        Rotate rotate = Rotate.rotate(rotation, 0, 15);
         label.getTransforms().add(rotate);
         return label;
     }

@@ -1,11 +1,10 @@
 package com.zadyraichuk;
 
+import com.zadyraichuk.controller.SelectorUIController;
 import com.zadyraichuk.general.PropertiesFile;
-import com.zadyraichuk.selector.RandomSelector;
-import com.zadyraichuk.selector.RationalRandomSelector;
-import com.zadyraichuk.variant.VariantsList;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Objects;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,18 +13,28 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
+    public static final PropertiesFile PROPERTIES;
+
+    static {
+        PROPERTIES = loadAppProperties();
+    }
+
+    private static PropertiesFile loadAppProperties() {
+        URL path = App.class.getResource("/app.properties");
+        File propertiesFile = new File(Objects.requireNonNull(path).getPath());
+        return new PropertiesFile(propertiesFile);
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Thread.setDefaultUncaughtExceptionHandler(this::catchException);
+//        Thread.setDefaultUncaughtExceptionHandler(this::catchException);
 
-        SelectorController controller = setUpPrimaryStage(primaryStage);
-        PropertiesFile properties = loadAppProperties();
-        loadVariantCollections(properties);
-        controller.init(properties);
+        SelectorUIController controller = setUpPrimaryStage(primaryStage);
+//        loadVariantCollections(properties);
+        controller.init();
     }
 
-    private SelectorController setUpPrimaryStage(Stage primaryStage) throws IOException {
+    private SelectorUIController setUpPrimaryStage(Stage primaryStage) throws IOException {
         FXMLLoader loader =
             new FXMLLoader(Objects.requireNonNull(getClass().getResource("/ui/xml/selector.fxml")));
         Parent root = loader.load();
@@ -37,31 +46,26 @@ public class App extends Application {
         return loader.getController();
     }
 
-    private PropertiesFile loadAppProperties() throws IOException {
-        File propertiesFile = new File(Objects.requireNonNull(getClass().getResource("/app.properties")).getPath());
-        return new PropertiesFile(propertiesFile);
-    }
+//    private void loadVariantCollections(PropertiesFile properties) throws IOException {
+//        SelectorDataController appLogic = SelectorDataController.getInstance();
+//        File variantsDir = new File(Objects.requireNonNull(getClass().getResource("../../../selector/variants/")).getPath());
+//        appLogic.readVariantsFromDirectory(variantsDir);
+//
+//        String selectedVariantsName = properties.getProperty("last.used.variants");
+//        VariantsList selectedVariants = appLogic.getVariantsList(selectedVariantsName);
+//
+//        SelectorDataController.SelectorType type = SelectorDataController.SelectorType
+//                .valueOf(properties.getProperty("selector.type"));
+//        RandomSelector selector = new RandomSelector(selectedVariants);
+//        if (type == SelectorDataController.SelectorType.RATIONAL) {
+//            selector = new RationalRandomSelector(selectedVariants);
+//        }
+//        appLogic.setCurrentSelector(selector);
+//    }
 
-    private void loadVariantCollections(PropertiesFile properties) throws IOException {
-        SelectorLogic appLogic = SelectorLogic.getInstance();
-        File variantsDir = new File(Objects.requireNonNull(getClass().getResource("variants/")).getPath());
-        appLogic.readVariantsFromDirectory(variantsDir);
-
-        String selectedVariantsName = properties.getProperty("last.used.variants");
-        VariantsList selectedVariants = appLogic.getVariantsList(selectedVariantsName);
-
-        SelectorLogic.SelectorType type = SelectorLogic.SelectorType
-            .valueOf(properties.getProperty("selector.type"));
-        RandomSelector selector = new RandomSelector(selectedVariants);
-        if (type == SelectorLogic.SelectorType.RATIONAL) {
-            selector = new RationalRandomSelector(selectedVariants);
-        }
-        appLogic.setSelector(selector);
-    }
-
-    private void catchException(Thread t, Throwable e) {
-        System.out.println(e.getMessage());
-//        e.printStackTrace();
-    }
+//    private void catchException(Thread t, Throwable e) {
+//        System.out.println(e.getMessage());
+////        e.printStackTrace();
+//    }
 
 }
