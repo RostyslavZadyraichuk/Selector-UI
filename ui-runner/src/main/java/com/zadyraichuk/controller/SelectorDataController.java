@@ -17,7 +17,7 @@ public class SelectorDataController {
 
     private static final String VARIANTS_DIR;
 
-    private static final String FILE_EXTENSION = "selector";
+    private static final String FILE_EXTENSION = "json";
 
     private static SelectorDataController instance;
 
@@ -29,7 +29,7 @@ public class SelectorDataController {
     static {
         VARIANTS_DIR = App.USER_PATH + "variants/";
         ResourceLoader.loadResource(
-            "/variants/templates/Template.selector",
+            "/variants/templates/Template." + FILE_EXTENSION,
             App.USER_PATH + "variants/templates/",
             "Template",
             FILE_EXTENSION);
@@ -123,7 +123,7 @@ public class SelectorDataController {
             File templateFile = new File(VARIANTS_DIR + "templates/Template." + FILE_EXTENSION);
             // selectors.put("Template", template);
             return SelectorIO.read(templateFile.toPath());
-        } catch (ClassNotFoundException | IOException | NullPointerException e) {
+        } catch (IOException | NullPointerException e) {
             System.out.println("Cannot read template");
         }
 
@@ -142,10 +142,10 @@ public class SelectorDataController {
 
                     if (fileNameWithExt.endsWith('.' + FILE_EXTENSION)) {
                         String fileName = fileNameWithExt.substring(0,
-                            fileNameWithExt.length() - 9);
+                            fileNameWithExt.length() - FILE_EXTENSION.length() - 1);
                         try {
                             selectors.put(fileName, SelectorIO.read(Path.of(file.getPath())));
-                        } catch (ClassNotFoundException | IOException e) {
+                        } catch (IOException e) {
                             System.out.println(e.getMessage());
                         }
                     }
