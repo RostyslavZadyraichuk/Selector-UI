@@ -1,0 +1,184 @@
+.list-view {
+    -fx-background-color: transparent;
+}
+
+.btn {
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.on-load {
+    -fx-cursor: wait !important;
+}
+
+.gray-text,
+.gray-text .text,
+.gray-text .ikonli-font-icon {
+    -fx-fill: #e7e7e7;
+}
+
+.gray-text:hover,
+.gray-text:hover .text,
+.gray-text:hover .ikonli-font-icon {
+    -fx-fill: #d9d9d9;
+}
+
+.orange-btn {
+    -fx-background-color: #e88164;
+}
+
+.orange-btn:hover {
+    -fx-background-color: #d5765c;
+}
+
+.orange-text,
+.orange-text .text,
+.orange-text .ikonli-font-icon {
+    -fx-fill: #e88164;
+}
+
+.orange-text:hover,
+.orange-text:hover .text,
+.orange-text:hover .ikonli-font-icon {
+    -fx-fill: #d5765c;
+}
+
+.add-btn {
+    -fx-border-width: 3px;
+    -fx-border-color: #e88164 !important;
+}
+
+.add-btn:hover,
+.add-btn:hover .ikonli-font-icon {
+    -fx-border-color: #d5765c !important;
+}
+
+.radius-8 {
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+.radius-15 {
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+}
+
+.radius-100 {
+    -fx-background-radius: 100px;
+    -fx-border-radius: 100px;
+}
+
+.transparent-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.edit-window, .settings-window {
+    -fx-background-color: #e7e7e7;
+    -fx-translate-y: 650px;
+}
+
+.wheel-label {
+    -fx-font-size: 20;
+    -fx-font-weight: 800;
+    -fx-text-fill: #f3f3f3;
+}
+
+.combo-box {
+    -fx-background-radius: 4px;
+    -fx-background-color: #d7d7d7;
+}
+
+.combo-box:hover {
+    -fx-background-color: #c5c5c5;
+}
+
+.combo-box.open:hover {
+    -fx-background-color: #d7d7d7 !important;
+}
+
+.combo-box .label {
+    -fx-text-fill: #656565;
+}
+
+.combo-box .arrow {
+    -fx-pref-width: 8px;
+    -fx-pref-height: 3px;
+    -fx-background-color: #e88164;
+}
+
+.combo-box .list-view {
+    -fx-background-color: #d7d7d7;
+    -fx-text-fill: #656565;
+    -fx-padding: 4px 0 5px 0;
+    -fx-translate-y: -4px;
+    -fx-border-insets: 0;
+    -fx-border-color: transparent;
+}
+
+.combo-box .list-view .list-cell {
+    -fx-background-color: #d7d7d7;
+    -fx-text-fill: #656565;
+    -fx-border-insets: 0 0 2px 0;
+}
+
+.combo-box .list-view .list-cell:hover {
+    -fx-background-color: #656565;
+    -fx-text-fill: #fafafa;
+    -fx-cursor: hand;
+}
+
+.combo-box .list-view .list-cell:selected {
+    -fx-background-color: #c5c5c5 !important;
+    -fx-text-fill: #656565 !important;
+}
+
+.check-box .box {
+    -fx-background-radius: 8px;
+}
+
+#select-combo-box {
+    -fx-background-radius: 8px;
+}
+
+#select-combo-box .arrow {
+    -fx-pref-width: 14px;
+    -fx-pref-height: 5px;
+}
+
+#select-combo-box .list-view {
+    -fx-padding: 8px 0 10px 0 !important;
+    -fx-translate-y: -8px
+}
+
+#select-combo-box .list-view .list-cell {
+    -fx-border-insets: 0 0 4px 0;
+    -fx-cell-size: 25px;
+}
+
+#result-field {
+    -fx-text-fill: #e88164;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+#top-panel {
+    -fx-background-color: #e8e8e8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 0, 0, 0, 2);
+}
+
+#error-dialog .button {
+    -fx-pref-width: 100px;
+    -fx-pref-height: 24px;
+}
+
+#error-dialog .title {
+    -fx-background-radius: 10px 10px 0 0;
+    -fx-border-width: 0;
+}
+
+#error-dialog .content {
+    -fx-background-radius: 0 0 10px 10px;
+    -fx-border-width: 0;
+}

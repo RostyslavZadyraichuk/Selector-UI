@@ -1,10 +1,11 @@
 #Code editors
 .idea/*
 .vscode/*
+*.iml
 
 #Output folders
-/target/**
-/out/**
+**/target/**
+**/out/**
 
 #Temporary files
 *~

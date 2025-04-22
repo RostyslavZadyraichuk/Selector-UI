@@ -1,0 +1,30 @@
+<HBox alignment="CENTER" styleClass="edit-element">
+    <children>
+        <ColorPicker prefHeight="45.0" prefWidth="90.0" />
+        <Separator orientation="VERTICAL" />
+        <TextField prefHeight="30.0" prefWidth="221.0" styleClass="value-field">
+            <padding>
+                <Insets left="44.0" />
+            </padding>
+        </TextField>
+        <Separator layoutX="81.0" layoutY="20.0" orientation="VERTICAL" />
+        <TextField styleClass="weight-field" />
+        <Separator layoutX="266.0" layoutY="20.0" orientation="VERTICAL" />
+        <Button mnemonicParsing="false" styleClass="remove-btn" text="Button" />
+        <Separator layoutX="421.0" layoutY="20.0" orientation="VERTICAL" />
+        <VBox styleClass="nav-container">
+            <children>
+                <Button maxHeight="5.0" mnemonicParsing="false" prefHeight="10.0" styleClass="up-btn">
+                    <font>
+                        <Font size="1.0" />
+                    </font>
+                </Button>
+                <Separator prefWidth="200.0" />
+                <Button mnemonicParsing="false" styleClass="down-btn" />
+            </children>
+        </VBox>
+    </children>
+    <padding>
+        <Insets bottom="10.0" left="25.0" right="10.0" top="10.0" />
+    </padding>
+</HBox>

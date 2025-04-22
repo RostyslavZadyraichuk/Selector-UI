@@ -1,0 +1,63 @@
+{
+  "@class" : "RandomSelector",
+  "variantsList" : {
+    "@type" : "VariantsList",
+    "variants" : [ "java.util.ArrayList", [ {
+      "@type" : "Variant",
+      "value" : "Variant 1",
+      "variantWeight" : 1,
+      "currentPercent" : 0.25,
+      "color" : {
+        "@class" : "VariantColor",
+        "hexColor" : "#FFC75F"
+      }
+    }, {
+      "@type" : "Variant",
+      "value" : "Variant 2",
+      "variantWeight" : 1,
+      "currentPercent" : 0.25,
+      "color" : {
+        "@class" : "VariantColor",
+        "hexColor" : "#845EC2"
+      }
+    }, {
+      "@type" : "Variant",
+      "value" : "Variant 3",
+      "variantWeight" : 1,
+      "currentPercent" : 0.25,
+      "color" : {
+        "@class" : "VariantColor",
+        "hexColor" : "#ff9671"
+      }
+    }, {
+      "@type" : "Variant",
+      "value" : "Variant 4",
+      "variantWeight" : 1,
+      "currentPercent" : 0.25,
+      "color" : {
+        "@class" : "VariantColor",
+        "hexColor" : "#D65DB1"
+      }
+    } ] ],
+    "declaredTotalWeight" : 4,
+    "palette" : {
+      "@class" : "VariantColorPalette",
+      "colors" : [ "[Lcom.zadyraichuk.variant.VariantColor;", [ {
+        "@class" : "VariantColor",
+        "hexColor" : "#FFC75F"
+      }, {
+        "@class" : "VariantColor",
+        "hexColor" : "#845EC2"
+      }, {
+        "@class" : "VariantColor",
+        "hexColor" : "#FF9671"
+      }, {
+        "@class" : "VariantColor",
+        "hexColor" : "#D65DB1"
+      } ] ],
+      "nextColorIndex" : 0
+    }
+  },
+  "name" : "Template",
+  "currentRotation" : 90
+}

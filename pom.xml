@@ -5,14 +5,36 @@
   <groupId>com.zadyraichuk</groupId>
   <artifactId>SelectorUI</artifactId>
   <version>0.1.0-beta</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
 
   <name>SelectorUI</name>
+
+  <modules>
+    <module>selector-util-api</module>
+    <module>ui-runner</module>
+  </modules>
 
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <juint.version>5.7.2</juint.version>
+    <com.fasterxml.jackson.version>2.18.2</com.fasterxml.jackson.version>
   </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${juint.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency>
+  </dependencies>
 
 </project>
