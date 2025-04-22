@@ -54,9 +54,10 @@ public class App extends Application {
     ////        e.printStackTrace();
 //    }
 
+    //todo check required files initialisation if not exist
     private static PropertiesFile loadAppProperties() {
-        URL path = App.class.getResource("/app.properties");
-        File propertiesFile = new File(Objects.requireNonNull(path).getPath());
+        String propertiesPath = System.getProperty("user.home") + "/.my_utils/selector/app.properties";
+        File propertiesFile = new File(propertiesPath);
         return new PropertiesFile(propertiesFile);
     }
 
