@@ -42,7 +42,7 @@
     "declaredTotalWeight" : 4,
     "palette" : {
       "@class" : "VariantColorPalette",
-      "colors" : [ "[Lcom.zadyraichuk.selector.domain.VariantColor;", [ {
+      "colors" : [ "[Lcom.zadyraichuk.variant.VariantColor;", [ {
         "@class" : "VariantColor",
         "hexColor" : "#FFC75F"
       }, {
